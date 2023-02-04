@@ -16,7 +16,10 @@ socket.addEventListener("close", () => {
  * 메시지 수신 시 처리
  */
 socket.addEventListener("message", (message) => {
-  console.log("Just got this:", message.data, "from the server");
+  //console.log("Just got this:", message.data, "from the server");
+  const li = document.createElement("li");
+  li.innerText = message.data;
+  messageList.append(li);
 })
 
 /**
@@ -24,7 +27,7 @@ socket.addEventListener("message", (message) => {
  */
 messageForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  
+
   const input = messageForm.querySelector("input");
   socket.send(input.value);
   input.value = "";
