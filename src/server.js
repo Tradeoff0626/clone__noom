@@ -25,12 +25,23 @@ const sockets = [];                 //connection되는 socket을 저장하기 �
  */
 wss.on("connection", (socket) => {
   sockets.push(socket);             //connection되는 socket을 저장. 연결된 connection을 모두 사용하기 위한 용도
+  socket["nickname"] = "Anonymous"; //닉네임은 익명 사용자(Anonymous)로 연결된 소켓에 초기값 설정
+
   console.log("Connection to Browser");
   
   socket.on("close", () => console.log("Disconnected from Browser"));
 
   socket.on("message", (msg) => {
-    sockets.forEach( aSocket => aSocket.send(`${msg}`));          //연결된 모든 소켓에 메시지 전달
+    const message = JSON.parse(msg);
+
+    switch (message.type) {
+      case "nickname":
+        socket["nickname"] = message.payload;     //연결된 소켓에 닉네임 설정
+        break;
+      case "new_message":
+        sockets.forEach( aSocket => aSocket.send(`${socket.nickname} : ${message.payload}`));          //연결된 모든 소켓에 메시지 전달
+        break;
+    }
   })
 })
 
