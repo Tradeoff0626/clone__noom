@@ -1,5 +1,5 @@
 import http from "http";
-import WebSocket from "ws";
+import SocketIO from "socket.io";
 
 import express from "express";
 
@@ -13,36 +13,12 @@ app.use("/public", express.static(__dirname + "/public"));
 app.get("/", (req, res) => res.render("home"));   //'/'의 렌더링은 home.pug로
 app.get("/*", (req, res) => res.redirect("/"));
 
-const handleListen = () => console.log("Listening on http://localhost:3000");
 
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const httpServer = http.createServer(app);
+const wsServer = SocketIO(httpServer);
 
-const sockets = [];                 //connection되는 socket을 저장하기 위한 배열
-
-/**
- * 웹소켓 서버 연결 시
- */
-wss.on("connection", (socket) => {
-  sockets.push(socket);             //connection되는 socket을 저장. 연결된 connection을 모두 사용하기 위한 용도
-  socket["nickname"] = "Anonymous"; //닉네임은 익명 사용자(Anonymous)로 연결된 소켓에 초기값 설정
-
-  console.log("Connection to Browser");
-  
-  socket.on("close", () => console.log("Disconnected from Browser"));
-
-  socket.on("message", (msg) => {
-    const message = JSON.parse(msg);
-
-    switch (message.type) {
-      case "nickname":
-        socket["nickname"] = message.payload;     //연결된 소켓에 닉네임 설정
-        break;
-      case "new_message":
-        sockets.forEach( aSocket => aSocket.send(`${socket.nickname} : ${message.payload}`));          //연결된 모든 소켓에 메시지 전달
-        break;
-    }
-  })
+wsServer.on("connection", (socket) => {
+  console.log(socket);
 })
 
-server.listen(3000, handleListen);    //http 프로토콜과 ws 프로토콜 모두 사용 
+httpServer.listen(3000, () => console.log("Listening on http://localhost:3000"));
