@@ -25,7 +25,11 @@ wsServer.on("connection", (socket) => {
 
     socket.join(roomName);                  // roomName에 해당하는 room에 소켓 객체를 join
     socket.to(roomName).emit("welcome");    //roomName에 해당하는 room에 "welcome" 이벤트 전달. (동일한 이름의 roomName에만 전달)
-  }) 
+  })
+  
+  socket.on("disconnecting", () => {        //접속 종료 기본 이벤트. 접속 종료 '직전'에 발생.
+    socket.rooms.forEach(room => socket.to(room).emit("bye"));
+  })
 })
 
 httpServer.listen(3000, () => console.log("Listening on http://localhost:3000"));
