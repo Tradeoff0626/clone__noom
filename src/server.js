@@ -18,15 +18,16 @@ const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
 
 wsServer.on("connection", (socket) => {
-  //2번째 인자는 전달 받은 데이터.
-  //socket.on("enter_room", (roomName) => console.log(roomName));
 
   //2번째 인자는 전달 받은 데이터. 2번째 인자의 마지막 파라미터는 프론트엔드에서 처리할 콜백 함수명.
   socket.on("enter_room", (roomName, done) => {
+    done();                       // 프론트엔드 템플릿의 'showRoom()'를 실행
+
     console.log(roomName);
-    setTimeout(() => {
-      done(); //5초 뒤 프론트엔드에서 정의한 콜백함수 호출
-    }, 5000);
+    console.log(socket.id);
+    console.log(socket.rooms);    // room은 동일한 namespace 내에서 방을 나누는 하위 소켓 그룹의 개념
+    socket.join(roomName);        // roomName에 해당하는 room에 소켓 객체를 join
+    console.log(socket.rooms);
   }) 
 })
 

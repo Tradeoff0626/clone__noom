@@ -2,17 +2,30 @@ const socket = io();
 
 const welcome = document.getElementById("welcome");
 const form = document.querySelector("form");
+const room = document.getElementById("room");
+
+room.hidden = true;
+
+let roomName;
+
+/**
+ * room 이름 입력 시, room 입력 숨김/메시지 입력 표시
+ */
+function showRoom() {
+  welcome.hidden = true;
+  room.hidden = false;
+
+  const h3 = room.querySelector("h3");
+  h3.innerText = `Room - ${roomName}`;
+}
 
 function handleRoomSubmit(event) {
   event.preventDefault();
 
   const input = form.querySelector("input");
-  
-  //2번째 인자는 전달될 데이터(JSON 타입으로 여러 데이터를 묶어서 전달 가능)
-  //socket.emit("enter_room", { payload: input.value });    
+  socket.emit("enter_room", input.value, showRoom);
 
-  //2번째 인자부터는 전달될 데이터. 마지막 인자는 서버(백엔드)에서 전달하여 호출되어 실행되는 프론트엔드 콜백 함수
-  socket.emit("enter_room", input.value, () => console.log("server is done!"));
+  roomName = input.value;           //방 이름 설정
   input.value = "";
 }
 
