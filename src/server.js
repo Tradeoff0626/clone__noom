@@ -23,11 +23,8 @@ wsServer.on("connection", (socket) => {
   socket.on("enter_room", (roomName, done) => {
     done();                       // 프론트엔드 템플릿의 'showRoom()'를 실행
 
-    console.log(roomName);
-    console.log(socket.id);
-    console.log(socket.rooms);    // room은 동일한 namespace 내에서 방을 나누는 하위 소켓 그룹의 개념
-    socket.join(roomName);        // roomName에 해당하는 room에 소켓 객체를 join
-    console.log(socket.rooms);
+    socket.join(roomName);                  // roomName에 해당하는 room에 소켓 객체를 join
+    socket.to(roomName).emit("welcome");    //roomName에 해당하는 room에 "welcome" 이벤트 전달. (동일한 이름의 roomName에만 전달)
   }) 
 })
 
