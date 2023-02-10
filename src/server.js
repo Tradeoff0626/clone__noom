@@ -18,7 +18,16 @@ const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
 
 wsServer.on("connection", (socket) => {
-  console.log(socket);
+  //2번째 인자는 전달 받은 데이터.
+  //socket.on("enter_room", (roomName) => console.log(roomName));
+
+  //2번째 인자는 전달 받은 데이터. 2번째 인자의 마지막 파라미터는 프론트엔드에서 처리할 콜백 함수명.
+  socket.on("enter_room", (roomName, done) => {
+    console.log(roomName);
+    setTimeout(() => {
+      done(); //5초 뒤 프론트엔드에서 정의한 콜백함수 호출
+    }, 5000);
+  }) 
 })
 
 httpServer.listen(3000, () => console.log("Listening on http://localhost:3000"));
