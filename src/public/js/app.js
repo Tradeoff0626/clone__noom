@@ -20,6 +20,23 @@ function addMessage(message) {
 }
 
 /**
+ * 메시지를 입력한 경우의 처리
+ * @param {*} event 
+ */
+function hadleMessageSubmit(event) {
+  event.preventDefault();
+
+  const input = room.querySelector("input");
+  const value = input.value;
+
+  //
+  socket.emit("new_message", value, roomName, () => {
+    addMessage(`You: ${value}`);
+  })
+  input.value = "";
+}
+
+/**
  * room 이름 입력 시, room 입력 숨김/메시지 입력 표시
  */
 function showRoom() {
@@ -28,6 +45,10 @@ function showRoom() {
 
   const h3 = room.querySelector("h3");
   h3.innerText = `Room - ${roomName}`;
+
+  //div #form 의 submit에 이벤트 핸들러 등록
+  const form = room.querySelector("form");
+  form.addEventListener("submit", hadleMessageSubmit);
 }
 
 function handleRoomSubmit(event) {
@@ -48,4 +69,8 @@ socket.on("welcome", () => {
 
 socket.on("bye", () => {
   addMessage("someone left ㅠ_ㅠ");
+})
+
+socket.on("new_message", (msg) => {
+  addMessage(msg);
 })

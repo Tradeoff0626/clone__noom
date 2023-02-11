@@ -30,6 +30,12 @@ wsServer.on("connection", (socket) => {
   socket.on("disconnecting", () => {        //접속 종료 기본 이벤트. 접속 종료 '직전'에 발생.
     socket.rooms.forEach(room => socket.to(room).emit("bye"));
   })
+
+  socket.on("new_message", (msg, room, done) => {
+    socket.to(room).emit("new_message", msg);   //설정한 room에 메시지 전달.(동일한 room에 메시지 전달)
+
+    done();                                     //addMessage(msg)를 호출하여 본인의 메시지를 화면에 출력
+  })
 })
 
 httpServer.listen(3000, () => console.log("Listening on http://localhost:3000"));
