@@ -20,6 +20,16 @@ const wsServer = SocketIO(httpServer);
 wsServer.on("connection", (socket) => {
   socket["nickname"] = "Noname";
 
+  //모든 이벤트(onAny)에 대해서 adpater 정보 확인 
+  socket.onAny( event => {
+    console.log(wsServer.sockets.adapter);
+    console.log(`Socket Event: ${event}`);
+    /**
+     *  출력된 어댑터 정보의 rooms와 sids를 비교하였을 때, hash ID는 private room 명으로 생성되며,
+     *  sids에는 존재하지만 rooms와 존재하지(중복되지) 않는 않는 ID(즉, hash ID가 아닌 ID)가 public room명이 된다.
+     */
+  })
+
   //2번째 인자는 전달 받은 데이터. 2번째 인자의 마지막 파라미터는 프론트엔드에서 처리할 콜백 함수명.
   socket.on("enter_room", (roomName, done) => {
     done();                       // 프론트엔드 템플릿의 'showRoom()'를 실행
